@@ -7,6 +7,7 @@ Application web installable (PWA) pour suivre ses séances de musculation :
 - un onglet **Corps** : un **écorché** (vue de face et de dos, sans peau) dont chaque muscle est coloré selon le travail fait pendant la **semaine** (lundi → dimanche, avec les flèches pour revoir les semaines passées) : gris = pas touché, vert citron = très sollicité. Touche un muscle pour voir son nom et sa valeur ; la liste en dessous montre aussi les muscles pas encore travaillés. Le même écorché existe pour chaque séance (onglet « Muscles » d'une séance) ;
 - des **molettes** à rouler pour choisir le poids (kg + décimales 0 / 0,25 / 0,5 / 0,75) et les répétitions, au lieu de taper au clavier ;
 - 105 exercices, dont 53 à la machine (dos en tête : machines convergentes, tractions assistées, Hammer Strength…), avec un schéma Départ → Arrivée dessiné pour presque tous. Un seul exercice par mouvement : les variantes « deux bras / un bras / alterné » sont fusionnées (on les retrouve quand même en les cherchant). Le filtre **Machines** (ou Poulies, Basic-Fit) est mémorisé et sert à la fois dans l'onglet Exercices et dans « Ajouter un exercice ». La recherche trouve aussi les anciens noms (« Écarté au pec deck », « Rowing assis poulie »…) et accepte plusieurs mots ;
+- Bouton **Aide** sur chaque exercice (carte de séance et fiche exercice) : les deux positions (départ / arrivée) et un court texte « position de départ, mouvement, conseils ».
 - des filtres « Machines » et « Basic-Fit », et la possibilité d'ajouter ses propres photos ;
 - l'historique, les records et la progression par exercice ;
 - tout fonctionne **sans connexion** et les données restent **sur ton téléphone**.
@@ -49,6 +50,7 @@ Le fichier `.nojekyll` indique à GitHub de publier les fichiers tels quels.
 | `index.html` | Page de l'appli |
 | `app.js` | Logique : séances, récap, historique, sauvegarde |
 | `illus.js` | Schémas des exercices (bonhomme dessiné par code, cinématique inverse) |
+| `aide.js` | Textes d’aide (départ, mouvement, conseils) des 105 exercices ; les exercices proches partagent un texte, avec des variantes (prises, écartement des pieds…) |
 | `body.js` | Écorché de face et de dos (SVG dessiné à la main), couleurs selon le travail des muscles (séance et semaine) |
 | `styles.css` | Thème sombre « Salle » (noir et vert citron), molettes, écorché |
 | `manifest.webmanifest` | Nom, icônes et affichage plein écran de l'appli installée |
@@ -68,7 +70,7 @@ puis ouvre `http://localhost:8000`. Le service worker fonctionne sur `localhost`
 
 **Publier une nouvelle version :** modifie les fichiers, puis change `VERSION` en tête de `sw.js` (par exemple `v3`). L'ancien cache est supprimé à l'activation. Sans ça, les pages et scripts sont de toute façon rechargés depuis le réseau dès que le téléphone est en ligne ; la version sert surtout à nettoyer l'ancien cache.
 
-**Ajouter un exercice :** une ligne dans la liste `BASE` de `app.js` (`id|nom|muscles principaux|muscles secondaires|type|1`), où `type` vaut `m` (machine), `p` (poulie) ou vide (poids libres), et `1` marque une machine citée par les guides officiels de Basic-Fit. Pour son schéma, ajoute l'`id` dans la table `MAP` de `illus.js`.
+**Ajouter un exercice :** une ligne dans la liste `BASE` de `app.js` (`id|nom|muscles principaux|muscles secondaires|type|1`), où `type` vaut `m` (machine), `p` (poulie) ou vide (poids libres), et `1` marque une machine citée par les guides officiels de Basic-Fit. Pour son schéma, ajoute l'`id` dans la table `MAP` de `illus.js`. Ajoute aussi son texte d’aide dans `aide.js` (`G('id', départ, mouvement, conseils)`), sinon le bouton Aide n’apparaît pas pour lui.
 
 ## Limites connues
 

@@ -6,7 +6,7 @@
    Les requêtes contournent le cache HTTP du navigateur (GitHub Pages garde les fichiers 10 minutes) :
    sans cela, une nouvelle page pouvait se retrouver avec d'anciens scripts.
    Pour publier une nouvelle version, change VERSION : l'ancien cache est supprimé à l'activation. */
-var VERSION = 'v4';
+var VERSION = 'v5';
 var CACHE = 'carnet-muscu-' + VERSION;
 var ASSETS = [
   './',
@@ -14,6 +14,7 @@ var ASSETS = [
   'styles.css',
   'app.js',
   'illus.js',
+  'aide.js',
   'body.js',
   'manifest.webmanifest',
   'icons/icon-192.png',
