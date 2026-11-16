@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet de muscu</title>
+<meta name="description" content="Carnet d’entraînement de musculation : exercices, séries, poids, répétitions et muscles travaillés à chaque séance.">
+<meta name="theme-color" content="#ECEEF0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1114" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Muscu">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Carnet de muscu</div>
+</header>
+<main id="app"></main>
+<nav class="tabs" aria-label="Navigation principale"><div class="navin">
+  <button data-act="tab" data-t="session"><svg viewBox="0 0 24 24"><path d="M3 9.5v5M6.5 7v10M17.5 7v10M21 9.5v5M6.5 12h11"/></svg>Séance</button>
+  <button data-act="tab" data-t="history"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Historique</button>
+  <button data-act="tab" data-t="lib"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Exercices</button>
+</div></nav>
+<div id="sheet"></div>
+<div id="lightbox"></div>
+<input type="file" id="file" class="sr" accept="image/*" multiple tabindex="-1" aria-hidden="true">
+<input type="file" id="impfile" class="sr" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+
+<script src="illus.js"></script>
+<script src="app.js"></script>
+<script>
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+}
+</script>
+</body>
+</html>
