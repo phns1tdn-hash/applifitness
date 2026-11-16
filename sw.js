@@ -3,8 +3,10 @@
    - Pages, scripts et styles : réseau d'abord (les mises à jour arrivent dès qu'on est en ligne),
      cache en secours (hors ligne ou réseau lent).
    - Polices et icônes : cache d'abord.
+   Les requêtes contournent le cache HTTP du navigateur (GitHub Pages garde les fichiers 10 minutes) :
+   sans cela, une nouvelle page pouvait se retrouver avec d'anciens scripts.
    Pour publier une nouvelle version, change VERSION : l'ancien cache est supprimé à l'activation. */
-var VERSION = 'v3';
+var VERSION = 'v4';
 var CACHE = 'carnet-muscu-' + VERSION;
 var ASSETS = [
   './',
@@ -29,7 +31,14 @@ var NETWORK_TIMEOUT = 4000;
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
-    caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); })
+    caches.open(CACHE).then(function (c) {
+      return Promise.all(ASSETS.map(function (a) {
+        return fetch(new Request(a, { cache: 'reload' })).then(function (res) {
+          if (!res.ok) throw new Error(a + ' : ' + res.status);
+          return c.put(a, res);
+        });
+      }));
+    }).then(function () { return self.skipWaiting(); })
   );
 });
 
@@ -45,7 +54,7 @@ self.addEventListener('activate', function (e) {
 function fromNetwork(req) {
   return new Promise(function (resolve, reject) {
     var timer = setTimeout(function () { reject(new Error('timeout')); }, NETWORK_TIMEOUT);
-    fetch(req).then(function (res) {
+    fetch(req, { cache: 'no-cache' }).then(function (res) {
       clearTimeout(timer);
       if (res && res.ok) {
         var copy = res.clone();
