@@ -6,7 +6,7 @@ Application web installable (PWA) pour suivre ses séances de musculation :
 - un récap des muscles les plus travaillés **pendant la séance** (séries, tonnage ou répétitions) ;
 - un onglet **Corps** : un **écorché** (vue de face et de dos, sans peau) dont chaque muscle est coloré selon le travail fait pendant la **semaine** (lundi → dimanche, avec les flèches pour revoir les semaines passées) : gris = pas touché, vert citron = très sollicité. Touche un muscle pour voir son nom et sa valeur ; la liste en dessous montre aussi les muscles pas encore travaillés. Le même écorché existe pour chaque séance (onglet « Muscles » d'une séance) ;
 - des **molettes** à rouler pour choisir le poids (kg + décimales 0 / 0,25 / 0,5 / 0,75) et les répétitions, au lieu de taper au clavier ;
-- 78 exercices, dont 26 à la machine (dos en tête), avec un schéma Départ → Arrivée dessiné pour chacun ;
+- 122 exercices, dont 70 à la machine (dos en tête : machines convergentes, tractions assistées, Hammer Strength…), avec un schéma Départ → Arrivée dessiné pour presque tous. La recherche trouve aussi les anciens noms (« Écarté au pec deck », « Rowing assis poulie »…) et accepte plusieurs mots ;
 - des filtres « Machines » et « Basic-Fit », et la possibilité d'ajouter ses propres photos ;
 - l'historique, les records et la progression par exercice ;
 - tout fonctionne **sans connexion** et les données restent **sur ton téléphone**.
