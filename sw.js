@@ -4,7 +4,7 @@
      cache en secours (hors ligne ou réseau lent).
    - Polices et icônes : cache d'abord.
    Pour publier une nouvelle version, change VERSION : l'ancien cache est supprimé à l'activation. */
-var VERSION = 'v1';
+var VERSION = 'v2';
 var CACHE = 'carnet-muscu-' + VERSION;
 var ASSETS = [
   './',
@@ -12,6 +12,7 @@ var ASSETS = [
   'styles.css',
   'app.js',
   'illus.js',
+  'body.js',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',
@@ -21,7 +22,8 @@ var ASSETS = [
   'fonts/Inter-Regular.latin.woff',
   'fonts/Inter-Medium.latin.woff',
   'fonts/Inter-SemiBold.latin.woff',
-  'fonts/Inter-Bold.latin.woff'
+  'fonts/Inter-Bold.latin.woff',
+  'fonts/SpaceGrotesk-VF.woff2'
 ];
 var NETWORK_TIMEOUT = 4000;
 

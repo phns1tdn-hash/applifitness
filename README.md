@@ -4,6 +4,8 @@ Application web installable (PWA) pour suivre ses séances de musculation :
 
 - les exercices de chaque séance, avec le poids et les répétitions de chaque série ;
 - un récap des muscles les plus travaillés **pendant la séance** (séries, tonnage ou répétitions) ;
+- un **écorché** (vue de face et de dos, sans peau) dont chaque muscle est coloré selon le travail fait pendant la séance : gris = pas touché, vert citron = très sollicité. Touche un muscle pour voir son nom et sa valeur ;
+- des **molettes** à rouler pour choisir le poids (kg + décimales 0 / 0,25 / 0,5 / 0,75) et les répétitions, au lieu de taper au clavier ;
 - 78 exercices, dont 26 à la machine (dos en tête), avec un schéma Départ → Arrivée dessiné pour chacun ;
 - des filtres « Machines » et « Basic-Fit », et la possibilité d'ajouter ses propres photos ;
 - l'historique, les records et la progression par exercice ;
@@ -47,11 +49,12 @@ Le fichier `.nojekyll` indique à GitHub de publier les fichiers tels quels.
 | `index.html` | Page de l'appli |
 | `app.js` | Logique : séances, récap, historique, sauvegarde |
 | `illus.js` | Schémas des exercices (bonhomme dessiné par code, cinématique inverse) |
-| `styles.css` | Mise en page, thèmes clair et sombre |
+| `body.js` | Écorché de face et de dos (SVG dessiné à la main), couleurs selon le travail des muscles |
+| `styles.css` | Thème sombre « Salle » (noir et vert citron), molettes, écorché |
 | `manifest.webmanifest` | Nom, icônes et affichage plein écran de l'appli installée |
 | `sw.js` | Service worker : mise en cache pour le mode hors ligne |
 | `icons/` | Icônes de l'appli |
-| `fonts/` | Police Inter (sous-ensemble latin) et sa licence |
+| `fonts/` | Polices Space Grotesk (titres) et Inter (texte, sous-ensemble latin), avec leurs licences |
 
 ## Développer
 
@@ -63,17 +66,17 @@ python3 -m http.server 8000
 
 puis ouvre `http://localhost:8000`. Le service worker fonctionne sur `localhost` et sur HTTPS.
 
-**Publier une nouvelle version :** modifie les fichiers, puis change `VERSION` en tête de `sw.js` (par exemple `v2`). L'ancien cache est supprimé à l'activation. Sans ça, les pages et scripts sont de toute façon rechargés depuis le réseau dès que le téléphone est en ligne ; la version sert surtout à nettoyer l'ancien cache.
+**Publier une nouvelle version :** modifie les fichiers, puis change `VERSION` en tête de `sw.js` (par exemple `v3`). L'ancien cache est supprimé à l'activation. Sans ça, les pages et scripts sont de toute façon rechargés depuis le réseau dès que le téléphone est en ligne ; la version sert surtout à nettoyer l'ancien cache.
 
 **Ajouter un exercice :** une ligne dans la liste `BASE` de `app.js` (`id|nom|muscles principaux|muscles secondaires|type|1`), où `type` vaut `m` (machine), `p` (poulie) ou vide (poids libres), et `1` marque une machine citée par les guides officiels de Basic-Fit. Pour son schéma, ajoute l'`id` dans la table `MAP` de `illus.js`.
 
 ## Limites connues
 
 - Les machines marquées « Basic-Fit » sont celles que citent les guides officiels de Basic-Fit. Les autres sont des modèles courants (Matrix, Technogym) : ce que ta salle possède vraiment varie d'un club à l'autre.
-- Les schémas sont indicatifs, pas une démonstration de la bonne technique.
+- Les schémas et l'écorché sont stylisés et indicatifs, pas une démonstration de la bonne technique ni un atlas d'anatomie. La coloration compte 1 point par série validée pour les muscles principaux et ½ pour les secondaires.
 - Les données ne se synchronisent pas entre appareils : passe par l'export et l'import.
 - L'appli a été testée dans Chrome (navigateur de bureau simulant un iPhone), en mode hors ligne et en clair/sombre. Elle n'a pas été essayée sur un vrai iPhone.
 
 ## Licence des polices
 
-La police [Inter](https://github.com/rsms/inter) est distribuée sous la SIL Open Font License 1.1 (voir `fonts/OFL.txt`).
+Les polices [Inter](https://github.com/rsms/inter) et [Space Grotesk](https://github.com/floriankarsten/space-grotesk) sont distribuées sous la SIL Open Font License 1.1 (voir `fonts/OFL.txt` et `fonts/OFL-SpaceGrotesk.txt`).

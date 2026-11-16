@@ -93,7 +93,7 @@ var BASE=[
 /* ---------- État ---------- */
 var LS='carnet-muscu-v1';
 var S={sessions:{},imgs:{},custom:[],libUpdated:0,prefs:{metric:'sets',currentId:null}};
-var UI={tab:'session',sub:'ex',libEx:null,q:'',ef:'',sheet:null,lb:null,imgTarget:null,showImport:false,msg:''};
+var UI={tab:'session',sub:'ex',libEx:null,q:'',ef:'',sheet:null,lb:null,imgTarget:null,showImport:false,msg:'',bm:null};
 
 function lsLoad(){
   try{
@@ -124,7 +124,6 @@ function fmt(n,d){
   return (Math.round(n*f)/f).toLocaleString('fr-FR',{maximumFractionDigits:d==null?1:d});
 }
 function fmtIn(n){return n==null?'':String(n).replace('.',',')}
-function num(v){var x=parseFloat(String(v).replace(',','.')); return isFinite(x)&&x>=0?x:null}
 function pad(n){return String(n).padStart(2,'0')}
 function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
 function parseD(s){var a=String(s).split('-').map(Number);return new Date(a[0],a[1]-1,a[2])}
@@ -349,6 +348,7 @@ function render(){
   else if(UI.tab==='history') html=historyHTML();
   else html=UI.libEx?exDetailHTML(UI.libEx):libHTML();
   $('#app').innerHTML=html;
+  var td=$('#topdate'); if(td) td.textContent=fmtDate(todayStr(),{weekday:'short',day:'numeric',month:'short'}).replace(/\./g,'');
   document.querySelectorAll('nav.tabs button').forEach(function(b){
     b.setAttribute('aria-current',b.dataset.t===UI.tab?'page':'false');
   });
@@ -362,7 +362,7 @@ function startHTML(){
   var h='<h2 class="hero">Quelle séance <em>aujourd’hui</em> ?</h2>'+installCard()+backupCard();
   if(open){
     var t=sessionTotals(open);
-    h+='<button class="resume" data-act="open" data-id="'+open.id+'"><span><b>'+esc(sessLabel(open))+'</b><small>En cours · '+t.sets+' série'+(t.sets>1?'s':'')+' validée'+(t.sets>1?'s':'')+'</small></span><span class="go">Reprendre ›</span></button>';
+    h+='<button class="resume" data-act="open" data-id="'+open.id+'" aria-label="Reprendre la séance '+esc(sessLabel(open))+'"><span><span class="rl">En cours</span><b>'+esc(sessLabel(open))+'</b><small>'+t.sets+' série'+(t.sets>1?'s':'')+' validée'+(t.sets>1?'s':'')+'</small></span><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>';
   }
   h+='<div class="card"><label class="lbl" for="new-name">Nom de la séance (facultatif)</label>'+
     '<input id="new-name" class="txt" maxlength="60" autocomplete="off" placeholder="Ex. Pectoraux / Triceps">'+
@@ -382,7 +382,7 @@ function tilesHTML(t){
 function sessionHTML(s){
   var t=sessionTotals(s);
   return '<section>'+
-    '<div class="s-top"><button class="back" data-act="close">‹ Séances</button><span class="badge '+(s.done?'done':'live')+'">'+(s.done?'Terminée':'En cours')+'</span></div>'+
+    '<div class="s-top"><button class="backc" data-act="close" aria-label="Retour aux séances"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><span class="badge '+(s.done?'done':'live')+'">'+(s.done?'Terminée':'En cours')+'</span></div>'+
     '<label class="sr" for="s-name">Nom de la séance</label>'+
     '<input id="s-name" class="title-in" data-f="sname" maxlength="60" autocomplete="off" placeholder="Nom de la séance" value="'+esc(s.name)+'">'+
     '<label class="sr" for="s-date">Date de la séance</label>'+
@@ -418,8 +418,8 @@ function cardHTML(s,e){
   var prev=prevFor(s,e.id);
   var prevSets=prev?prev.e.sets.filter(function(t){return t.ok}):[];
   return '<article class="ex" data-k="'+e.k+'">'+
-    '<header class="ex-h"><div class="ex-l">'+thumbHTML(e.id,e.n)+'<div><h3>'+esc(e.n)+'</h3><p class="mtags">'+muscTags(e)+'</p></div></div>'+
-    '<div class="ex-r"><span class="pr"'+(isRecord(s,e)?'':' hidden')+'>Record</span><button class="icon sm" data-act="addimg" data-ex="'+esc(e.id)+'" aria-label="Ajouter une photo à '+esc(e.n)+'">'+ICON_CAM+'</button></div></header>'+
+    '<header class="ex-h"><div class="ex-l">'+thumbHTML(e.id,e.n)+'<div><span class="pr"'+(isRecord(s,e)?'':' hidden')+'>Record</span><h3>'+esc(e.n)+'</h3><p class="mtags">'+muscTags(e)+'</p></div></div>'+
+    '<div class="ex-r"><button class="icon sm" data-act="addimg" data-ex="'+esc(e.id)+'" aria-label="Ajouter une photo à '+esc(e.n)+'">'+ICON_CAM+'</button></div></header>'+
     '<p class="last">'+(prev?'Dernière fois ('+esc(fmtDate(prev.s.date,{day:'numeric',month:'short'}))+') : <span class="mono">'+esc(fmtSets(prevSets))+'</span>':'Première fois sur cet exercice')+'</p>'+
     '<div class="sets-h" aria-hidden="true"><span>Série</span><span>kg</span><span>Reps</span><span></span><span></span></div>'+
     e.sets.map(function(t,i){return setHTML(e,t,i,prevSets)}).join('')+
@@ -431,10 +431,12 @@ function cardHTML(s,e){
 
 function setHTML(e,t,i,prevSets){
   var ph=placeholderFor(e,i,prevSets);
+  var hasW=t.w!=null, hasR=t.r!=null;
+  var wTxt=hasW?fmtIn(t.w):(ph.w!=null?fmtIn(ph.w):'–'), rTxt=hasR?String(t.r):(ph.r!=null?String(ph.r):'–');
   return '<div class="set'+(t.ok?' ok':'')+'" data-i="'+i+'">'+
     '<span class="idx">'+(i+1)+'</span>'+
-    '<input id="w-'+e.k+'-'+i+'" class="in" data-f="w" inputmode="decimal" autocomplete="off" aria-label="Poids de la série '+(i+1)+', en kilos" placeholder="'+(ph.w!=null?fmtIn(ph.w):'0')+'" value="'+(t.w!=null?fmtIn(t.w):'')+'">'+
-    '<input id="r-'+e.k+'-'+i+'" class="in" data-f="r" inputmode="numeric" autocomplete="off" aria-label="Répétitions de la série '+(i+1)+'" placeholder="'+(ph.r!=null?ph.r:'0')+'" value="'+(t.r!=null?t.r:'')+'">'+
+    '<button class="in pick'+(hasW?'':' ph')+'" data-act="wheel" data-f="w" aria-label="Poids de la série '+(i+1)+' : '+(hasW?fmtIn(t.w)+' kilos':'non renseigné')+'. Choisir">'+wTxt+'</button>'+
+    '<button class="in pick'+(hasR?'':' ph')+'" data-act="wheel" data-f="r" aria-label="Répétitions de la série '+(i+1)+' : '+(hasR?t.r:'non renseignées')+'. Choisir">'+rTxt+'</button>'+
     '<button class="chk" data-act="tick" aria-pressed="'+t.ok+'" aria-label="Valider la série '+(i+1)+'">'+ICON_CHECK+'</button>'+
     '<button class="x" data-act="rmset" aria-label="Supprimer la série '+(i+1)+'">'+ICON_X+'</button>'+
   '</div>';
@@ -442,30 +444,50 @@ function setHTML(e,t,i,prevSets){
 
 var METRICS=[['sets','Séries'],['vol','Tonnage'],['reps','Reps']];
 var METRIC_CAP={sets:'Séries équivalentes',vol:'Tonnage (kg × reps)',reps:'Répétitions'};
+var METRIC_UNIT={sets:'séries éq.',vol:'kg',reps:'reps'};
+function blocksHTML(v,n){
+  var full=Math.floor(v+1e-9), half=(v-full>=0.25)?1:0, h='';
+  for(var i=0;i<full;i++) h+='<i></i>';
+  if(half) h+='<i class="h"></i>';
+  return '<div class="blocks" style="--n:'+n+'" aria-hidden="true">'+h+'</div>';
+}
+function barHTML(r,max){
+  var w=Math.max(2,r.t/max*100), pp=r.t?r.p/r.t*100:0;
+  return '<div class="track" aria-hidden="true"><div class="bar" style="width:'+w.toFixed(1)+'%"><span class="p" style="width:'+pp.toFixed(1)+'%"></span><span class="s" style="flex:1"></span></div></div>';
+}
+function bodyCapHTML(m,st,metric){
+  var v=st[m]?st[m].p+st[m].s:0;
+  return '<b>'+esc(MN[m])+'</b>'+(v>0?'<span class="v">'+fmt(v,metric==='sets'?1:0)+' '+METRIC_UNIT[metric]+'</span>':'<span>pas travaillé dans cette séance</span>');
+}
 function recapHTML(s){
   var metric=S.prefs.metric||'sets';
-  var seg='<div class="seg" role="group" aria-label="Mesure du travail">'+METRICS.map(function(m){
+  var seg='<div class="seg alt" role="group" aria-label="Mesure du travail">'+METRICS.map(function(m){
     return '<button data-act="metric" data-v="'+m[0]+'" aria-pressed="'+(metric===m[0])+'">'+m[1]+'</button>';
   }).join('')+'</div>';
   var st=muscleStats(s,metric);
   var rows=ORDER.filter(function(m){return st[m]}).map(function(m){return {m:m,p:st[m].p,s:st[m].s,t:st[m].p+st[m].s}}).sort(function(a,b){return b.t-a.t});
-  if(!rows.length) return seg+'<p class="empty">Valide au moins une série pour voir quels muscles tu as sollicités dans cette séance.</p>';
-  var dec=metric==='sets'?1:0, max=rows[0].t;
-  var top=rows[0], low=rows[rows.length-1];
-  var h=seg;
-  if(rows.length>1&&top.t>low.t){
-    h+='<p class="insight">Le plus sollicité : <b>'+esc(MN[top.m])+'</b> ('+fmt(top.t,dec)+'). Le moins sollicité : <b>'+esc(MN[low.m])+'</b> ('+fmt(low.t,dec)+').</p>';
-  }else{
-    h+='<p class="insight">Muscle sollicité : <b>'+esc(MN[top.m])+'</b> ('+fmt(top.t,dec)+').</p>';
+  var scores={}; rows.forEach(function(r){scores[r.m]=r.t});
+  if(UI.bm&&!ORDER.some(function(m){return m===UI.bm})) UI.bm=null;
+  var sel=UI.bm||(rows.length?rows[0].m:null);
+  var body='<div class="body-card">'+Body.html(scores,sel)+
+    '<div class="bm-cap" id="bm-cap" aria-live="polite">'+(sel?(rows.length?bodyCapHTML(sel,st,metric):'Valide une série pour colorer les muscles'):'Valide une série pour colorer les muscles')+'</div>'+
+    '<div class="heat"><span class="none"><i></i>Rien</span><span>Peu</span><span class="ramp"></span><span>Beaucoup</span></div></div>';
+  if(!rows.length) return seg+body+'<p class="empty">Valide au moins une série pour voir quels muscles tu as sollicités dans cette séance.</p>';
+  var dec=metric==='sets'?1:0, max=rows[0].t, top=rows[0];
+  var n=Math.max(6,Math.ceil(max-1e-9));
+  var h=seg+body;
+  h+='<div class="topm"><div class="topm-h"><div><p class="cap">En tête · '+METRIC_CAP[metric].toLowerCase()+'</p><div class="topn">'+esc(MN[top.m])+'</div></div><div class="topv">'+fmt(top.t,dec)+'</div></div>'+
+    (metric==='sets'?blocksHTML(top.t,n):barHTML(top,max));
+  if(rows.length>1){
+    h+='<div class="mrows">'+rows.slice(1).map(function(r){
+      return '<div class="mrow'+(r.t<=max/2?' low':'')+'"><div class="mh"><span class="mname">'+esc(MN[r.m])+'</span><span class="mval">'+fmt(r.t,dec)+'</span></div>'+
+        (metric==='sets'?blocksHTML(r.t,n):barHTML(r,max))+'</div>';
+    }).join('')+'</div>';
   }
-  h+='<p class="cap">'+METRIC_CAP[metric]+'</p>';
-  rows.forEach(function(r){
-    var w=Math.max(2,r.t/max*100), pp=r.t?r.p/r.t*100:0;
-    h+='<div class="mrow"><span class="mname">'+esc(MN[r.m])+'</span>'+
-      '<div class="track"><div class="bar" style="width:'+w.toFixed(1)+'%"><span class="p" style="width:'+pp.toFixed(1)+'%"></span><span class="s" style="flex:1"></span></div></div>'+
-      '<span class="mval">'+fmt(r.t,dec)+'</span></div>';
-  });
-  h+='<div class="legend"><span class="p"><i></i>Travail direct</span><span class="s"><i></i>Travail indirect (compte ½)</span></div>';
+  h+='</div>';
+  h+=metric==='sets'
+    ?'<div class="legend"><span class="p"><i></i>1 bloc = 1 série directe</span><span class="h"><i></i>½ bloc = indirect (compte ½)</span></div>'
+    :'<div class="legend"><span class="p"><i></i>Travail direct</span><span class="s"><i></i>Travail indirect (compte ½)</span></div>';
   var none=ORDER.filter(function(m){return !st[m]});
   if(none.length) h+='<p class="cap">Non sollicités dans cette séance</p><div class="chips">'+none.map(function(m){return '<span class="chip ro">'+esc(MN[m])+'</span>'}).join('')+'</div>';
   return h;
@@ -586,7 +608,7 @@ function exDetailHTML(id){
   var sec=ex.s.filter(function(m){return ex.p.indexOf(m)<0});
   var out='<button class="back" data-act="exback">‹ Exercices</button><h2 class="h2">'+esc(ex.n)+'</h2>'+
     '<p class="mtags">'+(eqLabel(ex)?esc(eqLabel(ex))+(ex.bf?' · Basic-Fit':'')+' — ':'')+esc(names(ex.p).join(' · '))+(sec.length?' <span>+ '+esc(names(sec).join(', '))+'</span>':'')+'</p>';
-  if(Illus.has(ex.id)) out+='<p class="cap">Mouvement</p><div class="ill-box">'+Illus.svg(ex)+'</div><p class="note-t" style="margin-top:6px">Schéma indicatif. Muscles principaux en rouge, secondaires en rouge clair.</p>';
+  if(Illus.has(ex.id)) out+='<p class="cap">Mouvement</p><div class="ill-box">'+Illus.svg(ex)+'</div><p class="note-t" style="margin-top:6px">Schéma indicatif. Muscles principaux en vert vif, secondaires en vert atténué.</p>';
   var ph=imgsFor(ex.id);
   out+='<p class="cap">Photos</p><div class="photos">'+ph.map(function(m,i){
     return '<button class="thumb" data-act="lb" data-ex="'+esc(ex.id)+'" data-p="'+i+'" aria-label="Agrandir la photo '+(i+1)+'"><img src="'+m.data+'" alt=""></button>';
@@ -641,6 +663,18 @@ function renderSheet(){
       '<div class="sheet-b" id="pick-list">'+pickListHTML()+'</div>'+
       '<div class="sheet-f"><button class="btn" data-act="pickgo" id="pick-go"'+(sh.sel.length?'':' disabled')+'>'+(sh.sel.length?'Ajouter '+sh.sel.length+' exercice'+(sh.sel.length>1?'s':''):'Choisis un exercice')+'</button>'+
       '<button class="btn ghost" data-act="newex">Créer un exercice</button></div></div></div>';
+  }else if(sh.type==='wheel'){
+    var ws=curSession(), we=ws&&ws.ex.filter(function(x){return x.k===sh.k})[0];
+    var kgs=[], i;
+    for(i=0;i<=KG_MAX;i++) kgs.push(String(i));
+    var frs=FR.map(function(f){return ','+String(Math.round(f*100)).padStart(2,'0')});
+    var rps=[]; for(i=1;i<=REPS_MAX;i++) rps.push(String(i));
+    h='<div class="overlay'+(first?' first':'')+'"><div class="sheet" role="dialog" aria-modal="true" aria-label="Choisir le poids et les répétitions">'+
+      '<div class="sheet-h"><div class="row"><h2>Série '+(sh.i+1)+'</h2><button class="icon" data-act="sheetclose" aria-label="Fermer">'+ICON_X+'</button></div>'+
+      '<p class="wsub">'+esc(we?we.n:'')+'</p><div class="wprev" id="wprev" aria-live="polite"></div></div>'+
+      '<div class="sheet-b"><div class="wlbls"><span>Poids</span><span>Répétitions</span></div>'+
+      '<div class="wheels">'+wheelCol('kg','kg',kgs,sh.kg,'Poids, kilos')+wheelCol('fr','fr',frs,sh.fr,'Poids, décimales')+wheelCol('rp','rp',rps,sh.r-1,'Répétitions')+'</div></div>'+
+      '<div class="sheet-f"><button class="btn good" data-act="wheelok">Valider la série</button><button class="btn ghost" data-act="sheetclose">Annuler</button></div></div></div>';
   }else{
     var chips=function(key){return ORDER.map(function(m){return '<button class="chip" data-act="nx'+key+'" data-m="'+m+'" aria-pressed="'+(sh[key].indexOf(m)>=0)+'">'+esc(MN[m])+'</button>'}).join('')};
     h='<div class="overlay'+(first?' first':'')+'"><div class="sheet" role="dialog" aria-modal="true" aria-label="Créer un exercice">'+
@@ -653,7 +687,78 @@ function renderSheet(){
       '<div class="sheet-f"><button class="btn" data-act="nxsave">Créer l’exercice</button><button class="btn ghost" data-act="nxback">'+(sh.from==='pick'?'Retour':'Annuler')+'</button></div></div></div>';
   }
   el.innerHTML=h;
+  if(sh.type==='wheel'){initWheels();return}
   var inp=$(sh.type==='pick'?'#pick-q':'#nx-name'); if(inp&&sh.focus){inp.focus();sh.focus=false}
+}
+
+/* ---------- Roues poids / répétitions ---------- */
+var ITEM_H=44, FR=[0,0.25,0.5,0.75], KG_MAX=400, REPS_MAX=100;
+function openWheel(s,e,i){
+  var st=e.sets[i], prev=prevFor(s,e.id), ps=prev?prev.e.sets.filter(function(x){return x.ok}):[];
+  var ph=placeholderFor(e,i,ps);
+  var w=st.w!=null?st.w:(ph.w!=null?ph.w:20);
+  var r=st.r>0?st.r:(ph.r>0?ph.r:10);
+  var q=Math.round(w*4)/4, kg=Math.floor(q+1e-9), fr=Math.round((q-kg)*4);
+  if(fr>3){fr=0;kg++}
+  kg=Math.max(0,Math.min(KG_MAX,kg)); r=Math.max(1,Math.min(REPS_MAX,r));
+  UI.sheet={type:'wheel',k:e.k,i:i,kg:kg,fr:fr,r:r,kg0:kg,fr0:fr,w0:st.w};
+  renderSheet();
+}
+function wheelCol(cls,key,items,sel,label){
+  return '<div class="wheel '+cls+'" role="spinbutton" tabindex="0" data-wh="'+key+'" aria-label="'+label+'" aria-valuemin="0" aria-valuemax="'+(items.length-1)+'" aria-valuenow="'+sel+'" aria-valuetext="'+esc(items[sel])+'"><div class="pad"></div>'+
+    items.map(function(t,i){return '<div class="wi'+(i===sel?' sel':'')+'" data-act="wsel" data-i="'+i+'">'+t+'</div>'}).join('')+'<div class="pad"></div></div>';
+}
+function wheelWeight(sh){return sh.kg+FR[sh.fr]}
+function wheelPreview(){
+  var sh=UI.sheet, el=$('#wprev'); if(!sh||!el) return;
+  el.innerHTML=esc(fmtIn(wheelWeight(sh)))+'<small>kg ×</small>'+sh.r;
+}
+function wheelIdx(w){
+  var n=w.querySelectorAll('.wi').length;
+  return Math.max(0,Math.min(n-1,Math.round(w.scrollTop/ITEM_H)));
+}
+function wheelSync(w){
+  var sh=UI.sheet; if(!sh||sh.type!=='wheel') return;
+  var k=w.dataset.wh, i=wheelIdx(w);
+  if(k==='kg') sh.kg=i; else if(k==='fr') sh.fr=i; else sh.r=i+1;
+  var items=w.querySelectorAll('.wi'), cur=w.querySelector('.wi.sel'), nx=items[i];
+  if(nx&&cur!==nx){
+    if(cur) cur.classList.remove('sel');
+    nx.classList.add('sel');
+    w.setAttribute('aria-valuenow',i); w.setAttribute('aria-valuetext',nx.textContent);
+  }
+  wheelPreview();
+}
+function initWheels(){
+  document.querySelectorAll('#sheet .wheel').forEach(function(w){
+    var sh=UI.sheet, k=w.dataset.wh;
+    var idx=k==='kg'?sh.kg:k==='fr'?sh.fr:sh.r-1;
+    var place=function(){w.scrollTop=idx*ITEM_H};
+    place(); requestAnimationFrame(place);
+    var tick=false;
+    w.addEventListener('scroll',function(){
+      if(tick) return; tick=true;
+      requestAnimationFrame(function(){tick=false;wheelSync(w)});
+    },{passive:true});
+    w.addEventListener('keydown',function(ev){
+      var d={ArrowUp:-1,ArrowDown:1,PageUp:-5,PageDown:5}[ev.key];
+      if(ev.key==='Home') d=-1e6; if(ev.key==='End') d=1e6;
+      if(d==null) return;
+      ev.preventDefault();
+      var n=w.querySelectorAll('.wi').length, to=Math.max(0,Math.min(n-1,wheelIdx(w)+d));
+      w.scrollTo({top:to*ITEM_H,behavior:'smooth'});
+    });
+  });
+  wheelPreview();
+}
+function wheelDone(){
+  var sh=UI.sheet, s=curSession(); if(!sh||!s) return;
+  var e=s.ex.filter(function(x){return x.k===sh.k})[0], st=e&&e.sets[sh.i];
+  UI.sheet=null; renderSheet();
+  if(!st) return;
+  var same=(sh.kg===sh.kg0&&sh.fr===sh.fr0&&sh.w0!=null);
+  st.w=same?sh.w0:wheelWeight(sh); st.r=sh.r; st.ok=true;
+  touch(s); refreshCard(s,e);
 }
 
 /* ---------- Actions ---------- */
@@ -690,10 +795,6 @@ function refreshCard(s,e,focusSel){
   updateTiles(s);
 }
 function updateTiles(s){var t=$('#tiles'); if(t) t.innerHTML=tilesHTML(sessionTotals(s))}
-function afterEdit(s,card,e){
-  touch(s); updateTiles(s);
-  var pr=card&&card.querySelector('.pr'); if(pr) pr.hidden=!isRecord(s,e);
-}
 function exOf(btn){
   var s=curSession(), card=btn.closest('.ex'); if(!s||!card) return null;
   var e=s.ex.filter(function(x){return x.k===card.dataset.k})[0];
@@ -734,15 +835,29 @@ document.addEventListener('click',function(ev){
     case 'tick':
       ctx=exOf(b); if(!ctx) break;
       var row=b.closest('.set'), i=+row.dataset.i, st=ctx.e.sets[i];
-      st.ok=!st.ok;
-      if(st.ok){
+      if(!st.ok){
         var pv=prevFor(ctx.s,ctx.e.id), ps=pv?pv.e.sets.filter(function(x){return x.ok}):[];
         var ph=placeholderFor(ctx.e,i,ps);
-        if(st.w==null&&ph.w!=null){st.w=ph.w;row.querySelector('[data-f="w"]').value=fmtIn(ph.w)}
-        if(st.r==null&&ph.r!=null){st.r=ph.r;row.querySelector('[data-f="r"]').value=ph.r}
-      }
-      row.classList.toggle('ok',st.ok); b.setAttribute('aria-pressed',st.ok);
-      afterEdit(ctx.s,ctx.card,ctx.e); break;
+        if(st.w==null&&ph.w!=null) st.w=ph.w;
+        if(!(st.r>0)&&ph.r>0) st.r=ph.r;
+        if(!(st.r>0)){openWheel(ctx.s,ctx.e,i); break}
+        st.ok=true;
+      }else st.ok=false;
+      touch(ctx.s); refreshCard(ctx.s,ctx.e); break;
+    case 'wheel':
+      ctx=exOf(b); if(!ctx) break;
+      openWheel(ctx.s,ctx.e,+b.closest('.set').dataset.i); break;
+    case 'wsel':
+      var wh=b.closest('.wheel'); if(wh) wh.scrollTo({top:(+b.dataset.i)*ITEM_H,behavior:'smooth'}); break;
+    case 'wheelok': wheelDone(); break;
+    case 'bmus':
+      if(!s) break;
+      UI.bm=b.dataset.m;
+      var met=S.prefs.metric||'sets', cp=$('#bm-cap');
+      if(cp) cp.innerHTML=bodyCapHTML(UI.bm,muscleStats(s,met),met);
+      document.querySelectorAll('.bm.sel').forEach(function(x){x.classList.remove('sel')});
+      document.querySelectorAll('.bm[data-m="'+UI.bm+'"]').forEach(function(x){x.classList.add('sel')});
+      break;
     case 'rmex':
       if(!arm(b,'Confirmer le retrait')) break;
       ctx=exOf(b); if(!ctx) break;
@@ -827,15 +942,6 @@ document.addEventListener('input',function(ev){
   var card=t.closest('.ex'); if(!card) return;
   var e=s.ex.filter(function(x){return x.k===card.dataset.k})[0]; if(!e) return;
   if(f==='note'){e.note=t.value;touch(s);return}
-  var row=t.closest('.set'), st=e.sets[+row.dataset.i]; if(!st) return;
-  if(f==='w'){st.w=num(t.value)}
-  if(f==='r'){
-    var r=parseInt(t.value,10); st.r=isFinite(r)&&r>=0?r:null;
-    if(st.r>0&&!st.ok){st.ok=true}
-    if(!st.r&&st.ok){st.ok=false}
-    row.classList.toggle('ok',st.ok); row.querySelector('.chk').setAttribute('aria-pressed',st.ok);
-  }
-  afterEdit(s,card,e);
 });
 document.addEventListener('change',function(ev){
   var t=ev.target, s=curSession();
