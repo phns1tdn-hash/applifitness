@@ -449,6 +449,19 @@ function muscTags(e){
   return esc(names(e.p).join(' · '))+(sec.length?' <span>+ '+esc(names(sec).join(', '))+'</span>':'');
 }
 
+var ICON_HELP='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.2c-.8.5-1.2 1-1.2 1.9"/><path d="M12 16.6v.1"/></svg>';
+function aideBtn(id){
+  return Aide.has(id)?'<button class="aide" data-act="help" data-ex="'+esc(id)+'" aria-label="Aide : position et mouvement">'+ICON_HELP+'Aide</button>':'';
+}
+function helpHTML(id){
+  var x=exObj(id), a=Aide.get(id); if(!x||!a) return '';
+  var sec=x.s.filter(function(m){return x.p.indexOf(m)<0});
+  return (Illus.has(id)?'<div class="ill-box">'+Illus.svg(x)+'</div><p class="note-t hl-note">Schéma indicatif. Muscles principaux en vert vif, secondaires en vert atténué.</p>':'<p class="note-t">Pas de schéma pour cet exercice.</p>')+
+    '<div class="hl"><p class="cap">Position de départ</p><p>'+esc(a.d)+'</p>'+
+    '<p class="cap">Mouvement</p><p>'+esc(a.m)+'</p>'+
+    '<p class="cap">Conseils</p><p>'+esc(a.c)+'</p></div>'+
+    '<p class="mtags hl-m">'+esc(names(x.p).join(' · '))+(sec.length?' <span>+ '+esc(names(sec).join(', '))+'</span>':'')+'</p>';
+}
 function cardHTML(s,e){
   var prev=prevFor(s,e.id);
   var prevSets=prev?prev.e.sets.filter(function(t){return t.ok}):[];
@@ -460,7 +473,7 @@ function cardHTML(s,e){
     e.sets.map(function(t,i){return setHTML(e,t,i,prevSets)}).join('')+
     '<label class="sr" for="n-'+e.k+'">Note pour '+esc(e.n)+'</label>'+
     '<input id="n-'+e.k+'" class="note-in" data-f="note" maxlength="140" autocomplete="off" placeholder="Note (réglage, ressenti…)" value="'+esc(e.note)+'">'+
-    '<div class="ex-f"><button class="btn ghost sm" data-act="addset">+ Série</button><button class="link danger" data-act="rmex">Retirer l’exercice</button></div>'+
+    '<div class="ex-f"><div class="ex-fl"><button class="btn ghost sm" data-act="addset">+ Série</button>'+aideBtn(e.id)+'</div><button class="link danger" data-act="rmex" aria-label="Retirer l’exercice">Retirer</button></div>'+
   '</article>';
 }
 
@@ -685,6 +698,7 @@ function exDetailHTML(id){
   var sec=ex.s.filter(function(m){return ex.p.indexOf(m)<0});
   var out='<button class="back" data-act="exback">‹ Exercices</button><h2 class="h2">'+esc(ex.n)+'</h2>'+
     '<p class="mtags">'+(eqLabel(ex)?esc(eqLabel(ex))+(ex.bf?' · Basic-Fit':'')+' — ':'')+esc(names(ex.p).join(' · '))+(sec.length?' <span>+ '+esc(names(sec).join(', '))+'</span>':'')+'</p>';
+  if(Aide.has(ex.id)) out+='<button class="aide big" data-act="help" data-ex="'+esc(ex.id)+'">'+ICON_HELP+'Aide : position et mouvement</button>';
   if(Illus.has(ex.id)) out+='<p class="cap">Mouvement</p><div class="ill-box">'+Illus.svg(ex)+'</div><p class="note-t" style="margin-top:6px">Schéma indicatif. Muscles principaux en vert vif, secondaires en vert atténué.</p>';
   var ph=imgsFor(ex.id);
   out+='<p class="cap">Photos</p><div class="photos">'+ph.map(function(m,i){
@@ -740,6 +754,12 @@ function renderSheet(){
       '<div class="sheet-b" id="pick-list">'+pickListHTML()+'</div>'+
       '<div class="sheet-f"><button class="btn" data-act="pickgo" id="pick-go"'+(sh.sel.length?'':' disabled')+'>'+(sh.sel.length?'Ajouter '+sh.sel.length+' exercice'+(sh.sel.length>1?'s':''):'Choisis un exercice')+'</button>'+
       '<button class="btn ghost" data-act="newex">Créer un exercice</button></div></div></div>';
+  }else if(sh.type==='help'){
+    var hx=exObj(sh.ex);
+    h='<div class="overlay'+(first?' first':'')+'"><div class="sheet" role="dialog" aria-modal="true" aria-label="Aide : '+esc(hx?hx.n:'')+'">'+
+      '<div class="sheet-h"><div class="row"><h2>'+esc(hx?hx.n:'Aide')+'</h2><button class="icon" data-act="sheetclose" aria-label="Fermer">'+ICON_X+'</button></div></div>'+
+      '<div class="sheet-b">'+helpHTML(sh.ex)+'</div>'+
+      '<div class="sheet-f"><button class="btn ghost" data-act="sheetclose">Fermer</button></div></div></div>';
   }else if(sh.type==='wheel'){
     var ws=curSession(), we=ws&&ws.ex.filter(function(x){return x.k===sh.k})[0];
     var kgs=[], i;
@@ -955,6 +975,7 @@ document.addEventListener('click',function(ev){
       delete S.sessions[s.id]; S.prefs.currentId=null; lsSave();
       render(); window.scrollTo(0,0); break;
 
+    case 'help': if(Aide.has(b.dataset.ex)){UI.sheet={type:'help',ex:b.dataset.ex};renderSheet()} break;
     case 'sheetclose': UI.sheet=null; renderSheet(); break;
     case 'mf': UI.sheet.mf=b.dataset.m; renderSheet(); break;
     case 'pef': UI.sheet.ef=b.dataset.e; S.prefs.ef=b.dataset.e; lsSave(); renderSheet(); break;

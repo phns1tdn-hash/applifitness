@@ -126,7 +126,7 @@ nav.tabs svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2
 .x{width:44px;height:44px;border:0;background:none;color:var(--muted);display:grid;place-items:center;padding:0;border-radius:50%}
 .x svg{width:16px;height:16px;stroke-width:2}
 .note-in{width:100%;height:44px;margin-top:8px;border:1px dashed var(--line2);background:transparent;border-radius:14px;padding:0 14px;font-size:13px}
-.ex-f{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.ex-f{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:2px 8px;margin-top:8px}
 
 .cap{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 4px}
 .topm{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:16px;margin:12px 0}
@@ -301,3 +301,16 @@ button,.chip,.l-item,.thumb{touch-action:manipulation}
 .note-card{gap:8px;margin-bottom:12px}
 .note-card b{font-size:15px}
 .note-card p{margin:0}
+
+/* Aide à l'exécution */
+.ex-fl{display:flex;align-items:center;gap:8px}
+.ex-fl .aide{height:44px;padding:0 14px 0 11px}
+.aide{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 9px;border:1px solid var(--line2);border-radius:999px;background:transparent;color:var(--accent);font-size:13px;font-weight:700;white-space:nowrap}
+.aide svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.aide.big{height:44px;padding:0 18px 0 14px;margin-top:10px;font-size:14px}
+.hl p{font-size:15px;line-height:1.5;color:var(--ink)}
+.hl .cap{margin:16px 0 4px}
+.hl .cap:first-child{margin-top:8px}
+.hl-note{margin-top:6px;margin-bottom:0}
+.hl-m{margin:18px 0 6px}
+.ex-f .link{margin-left:auto}
