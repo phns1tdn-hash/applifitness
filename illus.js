@@ -217,13 +217,13 @@ var MAP={
  squat:'squat',squatav:'squat_front',hack:'hack',presse:'legpress',fentes:'lunge',bulgare:'bulgarian',legext:'legext',legcurl:'legcurl',
  sdtrou:'rdl',hipthrust:'hipthrust',goodmorn:'goodmorn',molldeb:'calf_stand',mollass:'calf_seat',
  chestpress:'chest_mach',chestincl:'chest_incl_mach',elatmach:['lat_raise',{g:'handle'}],oisemach:'rear_mach',tractass:'assist_pull',dipsass:'dips_assist',tirvertneutre:['pulldown',{g:'handle'}],rowwide:'row_wide',extlombmach:'back_mach',curlmach:'curl_mach',tricepsmach:'tri_mach',legcurlass:'legcurl_seat',adduct:'adduct',abduct:'abduct',crunchmach:'crunch_mach',smithsquat:['squat',{sc:RAIL1}],smithbench:['press_flat',{sc:BF.concat(RAIL2),A:P([104,81],270,[80,50],[124,106]),B:P([104,81],270,[80,72],[124,106])}],
- chestpoign:'chest_mach',chestdecl:'chest_mach',declconv2:'chest_mach',declconvalt:'chest_mach',declconv1:'chest_mach',hammer2:'chest_mach',hammeralt:'chest_mach',hammer1:'chest_mach',
- dipspecmach:'tri_mach',dipstrimach:'tri_mach',devconv:'ohp_mach',devconv1:'ohp_mach',devconvalt:'ohp_mach',
- tirvertserre:['pulldown',{g:'handle'}],tirconv1:'pulldown',tractsup:'assist_pull',tractsupser:'assist_pull',tractsuplarge:'assist_pull',tractproser:'assist_pull',tractprolarge:'assist_pull',
- molltsmith:['calf_stand',{sc:RAIL1.concat([['r',58,104,52,6]]),g:null}],mollhack:'calf_stand',mollpresse:'calf_press',mollpresse1:'calf_press',mollhoriz:'calf_press',mollhoriz1:'calf_press',
- pressehaut:'legpress',pressserre:'legpress',presse45_1:'legpress',pressehoriz:'legpress',pressehoriz1:'legpress',
- legext1:'legext',legextalt:'legext',lcham2:'legcurl',lchamalt:'legcurl',lcham1:'legcurl',
- hipext:'hip_ext',curlham2:'curl_mach',curlhamalt:'curl_mach',curlham1:'curl_mach',
+ chestpoign:'chest_mach',chestdecl:'chest_mach',declconv:'chest_mach',hammer:'chest_mach',
+ dipspecmach:'tri_mach',dipstrimach:'tri_mach',devconv:'ohp_mach',
+ tirvertserre:['pulldown',{g:'handle'}],tirconv:'pulldown',tractsup:'assist_pull',tractsupser:'assist_pull',tractsuplarge:'assist_pull',tractproser:'assist_pull',tractprolarge:'assist_pull',
+ molltsmith:['calf_stand',{sc:RAIL1.concat([['r',58,104,52,6]]),g:null}],mollhack:'calf_stand',mollpresse:'calf_press',mollhoriz:'calf_press',
+ pressehaut:'legpress',pressserre:'legpress',pressehoriz:'legpress',
+ lcham:'legcurl',
+ hipext:'hip_ext',curlham:'curl_mach',
  crunch:'crunch',relevejambes:'leg_raise',planche:'plank',crunchpou:'crunch_cable',roue:'ab_wheel',extlomb:'back_ext'
 };
 

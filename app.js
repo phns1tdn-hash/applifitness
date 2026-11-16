@@ -60,8 +60,8 @@ var BASE=[
 'closegrip|Développé couché prise serrée|tri|pec eav',
 'kickback|Kickback triceps|tri',
 'curlpoign|Curl poignets|avb',
-'presse|Presse à cuisses (machine)|quad fess|isch|m|1|Presse à cuisses, position standard',
-'legext|Leg extension (machine)|quad||m||Leg extension à la machine;Extension jambes',
+'presse|Presse à cuisses (machine)|quad fess|isch|m|1|Presse à cuisses, position standard;Presse à cuisses inclinée 45° (une jambe);Presse à cuisses inclinée à 45° à une jambe',
+'legext|Leg extension (machine)|quad||m||Leg extension à la machine;Extension jambes;Leg extension unilatéral (machine);Leg extension unilatéral à la machine;Leg extension en alternance (machine);Leg extension en alternance à la machine',
 'hack|Hack squat (machine)|quad|fess|m||Squat à la machine hack squat',
 'smithsquat|Squat (Smith machine)|quad fess|isch lomb abdo|m',
 'squat|Squat (barre)|quad fess|isch lomb abdo',
@@ -88,19 +88,13 @@ var BASE=[
 /* Machines à plaques, convergentes, Hammer Strength, tractions assistées... (ajoutés d'après l'autre appli) */
 'chestpoign|Développé poitrine (machine, poignées)|pec|eav tri|m||Développé poitrine aux poignées',
 'chestdecl|Développé décliné (machine)|pec|tri eav|m||Développé décliné à la machine',
-'declconv2|Développé décliné convergent (machine, deux bras)|pec|tri eav|m||Développé décliné à la machine convergente (deux bras)',
-'declconvalt|Développé décliné convergent (machine, bras alternés)|pec|tri eav|m||Développé décliné à la machine convergente (bras alternés)',
-'declconv1|Développé décliné convergent (machine, unilatéral)|pec|tri eav|m||Développé décliné à la machine convergente (unilatéral)',
-'hammer2|Développé convergent Hammer Strength (deux bras)|pec|tri eav|m||Développé à la machine convergente Hammer Strength (deux bras)',
-'hammeralt|Développé convergent Hammer Strength (bras alternés)|pec|tri eav|m||Développé à la machine convergente Hammer Strength (bras alternés)',
-'hammer1|Développé convergent Hammer Strength (unilatéral)|pec|tri eav|m||Développé à la machine convergente Hammer Strength (unilatéral)',
+'declconv|Développé décliné convergent (machine)|pec|tri eav|m||Développé décliné à la machine convergente (deux bras);Développé décliné convergent (machine, bras alternés);Développé décliné à la machine convergente (bras alternés);Développé décliné convergent (machine, unilatéral);Développé décliné à la machine convergente (unilatéral);Développé décliné convergent (machine, deux bras)',
+'hammer|Développé convergent Hammer Strength (machine)|pec|tri eav|m||Développé à la machine convergente Hammer Strength (deux bras);Développé convergent Hammer Strength (bras alternés);Développé à la machine convergente Hammer Strength (bras alternés);Développé convergent Hammer Strength (unilatéral);Développé à la machine convergente Hammer Strength (unilatéral);Développé convergent Hammer Strength (deux bras)',
 'dipspecmach|Dips pectoraux (machine assise)|pec tri|eav|m||Dips à la machine pour pectoraux',
 'dipstrimach|Dips triceps (machine assise)|tri|pec eav|m||Dips triceps à la machine',
-'devconv|Développé épaules convergent (machine)|eav elat|tri trap|m||Développé épaules à la machine convergente',
-'devconv1|Développé épaules convergent (machine, unilatéral)|eav elat|tri trap|m||Développé épaules à la machine convergente unilatéral',
-'devconvalt|Développé épaules convergent (machine, en alterné)|eav elat|tri trap|m||Développé épaules à la machine convergente en alterné',
+'devconv|Développé épaules convergent (machine)|eav elat|tri trap|m||Développé épaules à la machine convergente;Développé épaules convergent (machine, unilatéral);Développé épaules à la machine convergente unilatéral;Développé épaules convergent (machine, en alterné);Développé épaules à la machine convergente en alterné',
 'tirvertserre|Tirage vertical prise serrée (machine)|dos|bi mdos avb|m||Tirage prise serrée',
-'tirconv1|Tirage vertical convergent (machine, un bras)|dos|mdos bi earr avb|m||Tirage haut convergent à la machine, un bras',
+'tirconv|Tirage vertical convergent (machine)|dos|mdos bi earr avb|m||Tirage haut convergent à la machine, un bras;Tirage vertical convergent (machine, un bras)',
 'tractsup|Tractions assistées supination (machine)|dos bi|mdos avb|m||Traction assistée à la machine, prise supination',
 'tractsupser|Tractions assistées supination, prise serrée (machine)|dos bi|mdos avb|m||Traction supination assistée, prise serrée',
 'tractsuplarge|Tractions assistées supination, prise large (machine)|dos bi|mdos avb|m||Traction supination assistée, prise large',
@@ -108,29 +102,18 @@ var BASE=[
 'tractprolarge|Tractions assistées pronation, prise large (machine)|dos|bi mdos avb|m||Traction pronation assistée, prise large',
 /* Jambes, mollets, fessiers, biceps Hammer Strength (ajoutés d'après l'autre appli) */
 'molltsmith|Mollets (Smith machine)|moll||m',
-'mollpresse|Mollets à la presse|moll||m||Mollets presse;Mollets à la presse à cuisses',
-'mollpresse1|Mollets à la presse (une jambe)|moll||m||Extension mollet une jambe à la presse à cuisses',
-'mollhoriz|Mollets à la presse horizontale|moll||m||Extension des mollets à la presse horizontale',
-'mollhoriz1|Mollets à la presse horizontale (une jambe)|moll||m||Extension mollet à la presse horizontale, une jambe',
+'mollpresse|Mollets à la presse|moll||m||Mollets presse;Mollets à la presse à cuisses;Mollets à la presse (une jambe);Extension mollet une jambe à la presse à cuisses',
+'mollhoriz|Mollets à la presse horizontale|moll||m||Extension des mollets à la presse horizontale;Mollets à la presse horizontale (une jambe);Extension mollet à la presse horizontale, une jambe',
 'mollhack|Mollets (hack squat)|moll||m||Mollets à la machine hack squat',
 'pressehaut|Presse à cuisses, pieds hauts et écartés|quad fess|add isch|m||Presse à cuisses, pieds hauts et écartés (vue arrière)',
 'pressserre|Presse à cuisses, pieds serrés|quad|fess isch add|m',
-'presse45_1|Presse à cuisses inclinée 45° (une jambe)|quad fess|add isch|m||Presse à cuisses inclinée à 45° à une jambe',
-'pressehoriz|Presse à cuisses horizontale|quad fess|add isch|m',
-'pressehoriz1|Presse à cuisses horizontale (unilatérale)|quad fess|add isch|m||Presse à cuisses horizontale unilatérale',
-'legext1|Leg extension unilatéral (machine)|quad||m||Leg extension unilatéral à la machine',
-'legextalt|Leg extension en alternance (machine)|quad||m||Leg extension en alternance à la machine',
-'lcham2|Leg curl allongé Hammer Strength (deux jambes)|isch|moll|m||Leg curl allongé Hammer Strength, deux jambes',
-'lchamalt|Leg curl allongé Hammer Strength (jambes alternées)|isch|moll|m||Leg curl allongé Hammer Strength, jambes alternées',
-'lcham1|Leg curl allongé Hammer Strength (une jambe)|isch|moll|m||Leg curl allongé Hammer Strength, une jambe',
-'lcgenou|Leg curl à genoux (machine)|isch|moll|m',
-'lcgenou1|Leg curl à genoux unilatéral (machine)|isch|moll|m',
+'pressehoriz|Presse à cuisses horizontale|quad fess|add isch|m||Presse à cuisses horizontale (unilatérale);Presse à cuisses horizontale unilatérale',
+'lcham|Leg curl allongé Hammer Strength (machine)|isch|moll|m||Leg curl allongé Hammer Strength, deux jambes;Leg curl allongé Hammer Strength (jambes alternées);Leg curl allongé Hammer Strength, jambes alternées;Leg curl allongé Hammer Strength (une jambe);Leg curl allongé Hammer Strength, une jambe;Leg curl allongé Hammer Strength (deux jambes)',
+'lcgenou|Leg curl à genoux (machine)|isch|moll|m||Leg curl à genoux unilatéral (machine)',
 'hipext|Extension de hanche (machine)|fess|isch lomb|m||Extension de hanche à la machine',
 'abductdebout|Abduction de hanche debout (machine)|fess||m||Abduction de hanche à la machine',
 'adductdebout|Adduction de hanche debout (machine)|add||m||Adduction de hanche à la machine',
-'curlham2|Curl biceps Hammer Strength (deux bras)|bi|avb|m||Curl biceps à la machine Hammer Strength, deux bras',
-'curlhamalt|Curl biceps Hammer Strength (bras alternés)|bi|avb|m||Curl biceps à la machine Hammer Strength, bras alternés',
-'curlham1|Curl biceps Hammer Strength (un bras)|bi|avb|m||Curl biceps à la machine Hammer Strength, un bras'
+'curlham|Curl biceps Hammer Strength (machine)|bi|avb|m||Curl biceps à la machine Hammer Strength, deux bras;Curl biceps Hammer Strength (bras alternés);Curl biceps à la machine Hammer Strength, bras alternés;Curl biceps Hammer Strength (un bras);Curl biceps à la machine Hammer Strength, un bras;Curl biceps Hammer Strength (deux bras)'
 ].map(function(l){
   var a=l.split('|');
   return {id:a[0],n:a[1],p:a[2].split(' ').filter(Boolean),s:(a[3]||'').split(' ').filter(Boolean),eq:a[4]||'l',bf:a[5]==='1',al:(a[6]||'').split(';').filter(Boolean),custom:false};
@@ -202,9 +185,9 @@ function allEx(){
 var BACK=['dos','mdos','trap','lomb'];
 function eqRank(x){return x.eq==='m'?0:x.eq==='p'?1:2}
 function eqLabel(x){return x.eq==='m'?'Machine':x.eq==='p'?'Poulie':x.eq==='l'?'Poids libres':''}
-function eqOk(x,f){return !f||(f==='m'&&x.eq==='m')||(f==='bf'&&x.bf)}
+function eqOk(x,f){return !f||(f==='m'&&x.eq==='m')||(f==='p'&&x.eq==='p')||(f==='bf'&&x.bf)}
 function efChips(cur,act){
-  return [['','Tout'],['m','Machines'],['bf','Basic-Fit']].map(function(c){
+  return [['','Tout'],['m','Machines'],['p','Poulies'],['bf','Basic-Fit']].map(function(c){
     return '<button class="chip" data-act="'+act+'" data-e="'+c[0]+'" aria-pressed="'+(cur===c[0])+'">'+c[1]+'</button>';
   }).join('');
 }
@@ -615,7 +598,7 @@ function exCounts(){
 function libListHTML(){
   var q=norm(UI.q.trim()), counts=exCounts();
   var list=allEx().filter(function(x){
-    if(!eqOk(x,UI.ef)) return false;
+    if(!eqOk(x,S.prefs.ef)) return false;
     if(!q) return true;
     return matchQ(x,q);
   });
@@ -642,7 +625,7 @@ function libHTML(){
     '<div class="stack" style="margin-top:0">'+
     '<label class="sr" for="lib-q">Rechercher un exercice</label>'+
     '<input id="lib-q" class="txt" type="search" autocomplete="off" placeholder="Rechercher un exercice ou un muscle" value="'+esc(UI.q)+'">'+
-    '<div class="chips" role="group" aria-label="Filtrer par type">'+efChips(UI.ef,'ef')+'</div>'+efNote(UI.ef)+
+    '<div class="chips" role="group" aria-label="Filtrer par type">'+efChips(S.prefs.ef||'','ef')+'</div>'+efNote(S.prefs.ef)+
     '<button class="btn ghost" data-act="newex-lib">+ Créer un exercice</button></div>'+
     '<div id="lib-list">'+libListHTML()+'</div>'+
     '<h3 class="grp">Sauvegarde</h3><div class="card">'+
@@ -727,7 +710,7 @@ function exDetailHTML(id){
 function n1(n){return n<2}
 
 /* ---------- Feuille (ajout / création d'exercice) ---------- */
-function openPicker(){UI.sheet={type:'pick',q:'',mf:'',ef:'',sel:[]};renderSheet()}
+function openPicker(){UI.sheet={type:'pick',q:'',mf:'',ef:S.prefs.ef||'',sel:[]};renderSheet()}
 function pickListHTML(){
   var sh=UI.sheet, q=norm(sh.q.trim());
   var list=allEx().filter(function(x){
@@ -974,8 +957,8 @@ document.addEventListener('click',function(ev){
 
     case 'sheetclose': UI.sheet=null; renderSheet(); break;
     case 'mf': UI.sheet.mf=b.dataset.m; renderSheet(); break;
-    case 'pef': UI.sheet.ef=b.dataset.e; renderSheet(); break;
-    case 'ef': UI.ef=b.dataset.e; render(); break;
+    case 'pef': UI.sheet.ef=b.dataset.e; S.prefs.ef=b.dataset.e; lsSave(); renderSheet(); break;
+    case 'ef': S.prefs.ef=b.dataset.e; lsSave(); render(); break;
     case 'picktoggle':
       var sel=UI.sheet.sel, k=sel.indexOf(b.dataset.id);
       if(k>=0) sel.splice(k,1); else sel.push(b.dataset.id);
