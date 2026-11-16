@@ -4,7 +4,7 @@
      cache en secours (hors ligne ou réseau lent).
    - Polices et icônes : cache d'abord.
    Pour publier une nouvelle version, change VERSION : l'ancien cache est supprimé à l'activation. */
-var VERSION = 'v2';
+var VERSION = 'v3';
 var CACHE = 'carnet-muscu-' + VERSION;
 var ASSETS = [
   './',
