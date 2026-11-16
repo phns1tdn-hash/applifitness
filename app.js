@@ -93,7 +93,7 @@ var BASE=[
 /* ---------- État ---------- */
 var LS='carnet-muscu-v1';
 var S={sessions:{},imgs:{},custom:[],libUpdated:0,prefs:{metric:'sets',currentId:null}};
-var UI={tab:'session',sub:'ex',libEx:null,q:'',ef:'',sheet:null,lb:null,imgTarget:null,showImport:false,msg:'',bm:null};
+var UI={tab:'session',sub:'ex',libEx:null,q:'',ef:'',sheet:null,lb:null,imgTarget:null,showImport:false,msg:'',bm:null,wk:0};
 
 function lsLoad(){
   try{
@@ -346,6 +346,7 @@ function render(){
   var html;
   if(UI.tab==='session') html=curSession()?sessionHTML(curSession()):startHTML();
   else if(UI.tab==='history') html=historyHTML();
+  else if(UI.tab==='body') html=bodyHTML();
   else html=UI.libEx?exDetailHTML(UI.libEx):libHTML();
   $('#app').innerHTML=html;
   var td=$('#topdate'); if(td) td.textContent=fmtDate(todayStr(),{weekday:'short',day:'numeric',month:'short'}).replace(/\./g,'');
@@ -455,24 +456,27 @@ function barHTML(r,max){
   var w=Math.max(2,r.t/max*100), pp=r.t?r.p/r.t*100:0;
   return '<div class="track" aria-hidden="true"><div class="bar" style="width:'+w.toFixed(1)+'%"><span class="p" style="width:'+pp.toFixed(1)+'%"></span><span class="s" style="flex:1"></span></div></div>';
 }
-function bodyCapHTML(m,st,metric){
+function bodyCapHTML(m,st,metric,where){
   var v=st[m]?st[m].p+st[m].s:0;
-  return '<b>'+esc(MN[m])+'</b>'+(v>0?'<span class="v">'+fmt(v,metric==='sets'?1:0)+' '+METRIC_UNIT[metric]+'</span>':'<span>pas travaillé dans cette séance</span>');
+  return '<b>'+esc(MN[m])+'</b>'+(v>0?'<span class="v">'+fmt(v,metric==='sets'?1:0)+' '+METRIC_UNIT[metric]+'</span>':'<span>pas travaillé '+(where||'dans cette séance')+'</span>');
 }
 function recapHTML(s){
+  return muscleView(muscleStats(s,S.prefs.metric||'sets'),'dans cette séance','Valide au moins une série pour voir quels muscles tu as sollicités dans cette séance.','Non sollicités dans cette séance');
+}
+/* Écorché + classement des muscles à partir de statistiques déjà calculées (une séance ou une semaine). */
+function muscleView(st,where,emptyMsg,noneCap){
   var metric=S.prefs.metric||'sets';
   var seg='<div class="seg alt" role="group" aria-label="Mesure du travail">'+METRICS.map(function(m){
     return '<button data-act="metric" data-v="'+m[0]+'" aria-pressed="'+(metric===m[0])+'">'+m[1]+'</button>';
   }).join('')+'</div>';
-  var st=muscleStats(s,metric);
   var rows=ORDER.filter(function(m){return st[m]}).map(function(m){return {m:m,p:st[m].p,s:st[m].s,t:st[m].p+st[m].s}}).sort(function(a,b){return b.t-a.t});
   var scores={}; rows.forEach(function(r){scores[r.m]=r.t});
   if(UI.bm&&!ORDER.some(function(m){return m===UI.bm})) UI.bm=null;
   var sel=UI.bm||(rows.length?rows[0].m:null);
   var body='<div class="body-card">'+Body.html(scores,sel)+
-    '<div class="bm-cap" id="bm-cap" aria-live="polite">'+(sel?(rows.length?bodyCapHTML(sel,st,metric):'Valide une série pour colorer les muscles'):'Valide une série pour colorer les muscles')+'</div>'+
+    '<div class="bm-cap" id="bm-cap" aria-live="polite">'+(sel&&rows.length?bodyCapHTML(sel,st,metric,where):'Valide une série pour colorer les muscles')+'</div>'+
     '<div class="heat"><span class="none"><i></i>Rien</span><span>Peu</span><span class="ramp"></span><span>Beaucoup</span></div></div>';
-  if(!rows.length) return seg+body+'<p class="empty">Valide au moins une série pour voir quels muscles tu as sollicités dans cette séance.</p>';
+  if(!rows.length) return seg+body+'<p class="empty">'+emptyMsg+'</p>';
   var dec=metric==='sets'?1:0, max=rows[0].t, top=rows[0];
   var n=Math.max(6,Math.ceil(max-1e-9));
   var h=seg+body;
@@ -489,8 +493,47 @@ function recapHTML(s){
     ?'<div class="legend"><span class="p"><i></i>1 bloc = 1 série directe</span><span class="h"><i></i>½ bloc = indirect (compte ½)</span></div>'
     :'<div class="legend"><span class="p"><i></i>Travail direct</span><span class="s"><i></i>Travail indirect (compte ½)</span></div>';
   var none=ORDER.filter(function(m){return !st[m]});
-  if(none.length) h+='<p class="cap">Non sollicités dans cette séance</p><div class="chips">'+none.map(function(m){return '<span class="chip ro">'+esc(MN[m])+'</span>'}).join('')+'</div>';
+  if(none.length) h+='<p class="cap">'+noneCap+'</p><div class="chips">'+none.map(function(m){return '<span class="chip ro">'+esc(MN[m])+'</span>'}).join('')+'</div>';
   return h;
+}
+
+/* ---------- Corps : les muscles travaillés sur une semaine (lundi → dimanche) ---------- */
+function dstr(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function addDays(str,n){var d=parseD(str);d.setDate(d.getDate()+n);return dstr(d)}
+function mondayOf(str){var d=parseD(str);d.setDate(d.getDate()-((d.getDay()+6)%7));return dstr(d)}
+function weekRange(off){var a=addDays(mondayOf(todayStr()),7*(off||0));return {a:a,b:addDays(a,6)}}
+function weekSessions(w){return sessionsSorted().filter(function(x){return x.date>=w.a&&x.date<=w.b})}
+function weekStats(list,metric){
+  var out={};
+  list.forEach(function(x){
+    var st=muscleStats(x,metric);
+    Object.keys(st).forEach(function(m){var o=out[m]||(out[m]={p:0,s:0});o.p+=st[m].p;o.s+=st[m].s});
+  });
+  return out;
+}
+function weekLabel(w,off){
+  var a=parseD(w.a), b=parseD(w.b), so=a.getMonth()===b.getMonth();
+  var rng=so?a.getDate()+' – '+fmtDate(w.b,{day:'numeric',month:'short'}):fmtDate(w.a,{day:'numeric',month:'short'})+' – '+fmtDate(w.b,{day:'numeric',month:'short'});
+  rng=rng.replace(/\./g,'');
+  var big=off===0?'Cette semaine':off===-1?'Semaine dernière':'Il y a '+(-off)+' semaines';
+  return {big:big,rng:rng};
+}
+function bodyHTML(){
+  var off=Math.min(0,UI.wk||0), w=weekRange(off), list=weekSessions(w), metric=S.prefs.metric||'sets';
+  var lb=weekLabel(w,off), tot={n:0,sets:0,vol:0};
+  list.forEach(function(x){var t=sessionTotals(x); if(t.sets){tot.n++;tot.sets+=t.sets;tot.vol+=t.vol}});
+  var h='<h2 class="h2">Corps</h2>'+
+    '<div class="wknav"><button class="backc" data-act="wk" data-d="-1" aria-label="Semaine précédente"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'+
+    '<div class="wkl"><b>'+esc(lb.big)+'</b><small>'+esc(lb.rng)+'</small></div>'+
+    '<button class="backc" data-act="wk" data-d="1" aria-label="Semaine suivante"'+(off>=0?' disabled':'')+'><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>'+
+    '<div class="tiles">'+
+      '<div class="tile"><div class="v">'+tot.n+'</div><div class="l">Séance'+(tot.n>1?'s':'')+'</div></div>'+
+      '<div class="tile"><div class="v">'+tot.sets+'</div><div class="l">Séries validées</div></div>'+
+      '<div class="tile"><div class="v">'+fmt(tot.vol,0)+'<small>kg</small></div><div class="l">Volume soulevé</div></div>'+
+    '</div>';
+  return h+muscleView(weekStats(list,metric),off===0?'cette semaine':'cette semaine-là',
+    off===0?'Aucune série validée cette semaine pour l’instant. Dès que tu en valides une, les muscles se colorent ici.':'Aucune série validée cette semaine-là.',
+    off===0?'Pas encore travaillés cette semaine':'Non travaillés cette semaine-là');
 }
 
 function historyHTML(){
@@ -851,13 +894,19 @@ document.addEventListener('click',function(ev){
       var wh=b.closest('.wheel'); if(wh) wh.scrollTo({top:(+b.dataset.i)*ITEM_H,behavior:'smooth'}); break;
     case 'wheelok': wheelDone(); break;
     case 'bmus':
-      if(!s) break;
+      var met=S.prefs.metric||'sets', bst, bwh;
+      if(UI.tab==='body'){var bo=Math.min(0,UI.wk||0); bst=weekStats(weekSessions(weekRange(bo)),met); bwh=bo===0?'cette semaine':'cette semaine-là'}
+      else if(s){bst=muscleStats(s,met); bwh='dans cette séance'}
+      else break;
       UI.bm=b.dataset.m;
-      var met=S.prefs.metric||'sets', cp=$('#bm-cap');
-      if(cp) cp.innerHTML=bodyCapHTML(UI.bm,muscleStats(s,met),met);
+      var cp=$('#bm-cap');
+      if(cp) cp.innerHTML=bodyCapHTML(UI.bm,bst,met,bwh);
       document.querySelectorAll('.bm.sel').forEach(function(x){x.classList.remove('sel')});
       document.querySelectorAll('.bm[data-m="'+UI.bm+'"]').forEach(function(x){x.classList.add('sel')});
       break;
+    case 'wk':
+      if(b.disabled) break;
+      UI.wk=Math.min(0,(UI.wk||0)+(+b.dataset.d)); render(); break;
     case 'rmex':
       if(!arm(b,'Confirmer le retrait')) break;
       ctx=exOf(b); if(!ctx) break;

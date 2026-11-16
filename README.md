@@ -4,7 +4,7 @@ Application web installable (PWA) pour suivre ses séances de musculation :
 
 - les exercices de chaque séance, avec le poids et les répétitions de chaque série ;
 - un récap des muscles les plus travaillés **pendant la séance** (séries, tonnage ou répétitions) ;
-- un **écorché** (vue de face et de dos, sans peau) dont chaque muscle est coloré selon le travail fait pendant la séance : gris = pas touché, vert citron = très sollicité. Touche un muscle pour voir son nom et sa valeur ;
+- un onglet **Corps** : un **écorché** (vue de face et de dos, sans peau) dont chaque muscle est coloré selon le travail fait pendant la **semaine** (lundi → dimanche, avec les flèches pour revoir les semaines passées) : gris = pas touché, vert citron = très sollicité. Touche un muscle pour voir son nom et sa valeur ; la liste en dessous montre aussi les muscles pas encore travaillés. Le même écorché existe pour chaque séance (onglet « Muscles » d'une séance) ;
 - des **molettes** à rouler pour choisir le poids (kg + décimales 0 / 0,25 / 0,5 / 0,75) et les répétitions, au lieu de taper au clavier ;
 - 78 exercices, dont 26 à la machine (dos en tête), avec un schéma Départ → Arrivée dessiné pour chacun ;
 - des filtres « Machines » et « Basic-Fit », et la possibilité d'ajouter ses propres photos ;
@@ -49,7 +49,7 @@ Le fichier `.nojekyll` indique à GitHub de publier les fichiers tels quels.
 | `index.html` | Page de l'appli |
 | `app.js` | Logique : séances, récap, historique, sauvegarde |
 | `illus.js` | Schémas des exercices (bonhomme dessiné par code, cinématique inverse) |
-| `body.js` | Écorché de face et de dos (SVG dessiné à la main), couleurs selon le travail des muscles |
+| `body.js` | Écorché de face et de dos (SVG dessiné à la main), couleurs selon le travail des muscles (séance et semaine) |
 | `styles.css` | Thème sombre « Salle » (noir et vert citron), molettes, écorché |
 | `manifest.webmanifest` | Nom, icônes et affichage plein écran de l'appli installée |
 | `sw.js` | Service worker : mise en cache pour le mode hors ligne |
