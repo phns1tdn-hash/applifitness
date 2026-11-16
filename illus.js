@@ -202,6 +202,8 @@ T.crunch_mach={sc:[['r',62,90,34,4],['r',65,48,5,42],['l',78,94,78,110,3]],scA:[
 T.adduct={view:'fl',g:null,A:{a:40},B:{a:9}};
 T.abduct={view:'fl',g:null,A:{a:9},B:{a:40}};
 T.row_wide={sc:[['r',58,92,40,4],['r',96,46,5,28],['l',84,96,84,110,3]],g:'handle',A:P([70,86],15,[110,54],[112,100]),B:P([70,86],0,[88,56],[112,100],{eb:-1})};
+T.calf_press={sc:T.legpress.sc.concat([['l',86,38,105,59,5]]),g:null,A:P([56,86],315,[44,70],[90,54],{fo:30}),B:P([56,86],315,[44,70],[90,54],{fo:95})};
+T.hip_ext={sc:[['r',102,34,12,76],['r',90,60,14,6],['l',84,108,120,108,3]],g:null,A:P([86,62],0,[104,58],[86,104],{foot2:[86,104]}),B:P([86,62],4,[104,58],[62,92],{foot2:[86,104]})};
 var RAIL1=[['l',90,6,90,110,2]], RAIL2=[['l',90,6,90,72,2]];
 
 var MAP={
@@ -215,6 +217,13 @@ var MAP={
  squat:'squat',squatav:'squat_front',hack:'hack',presse:'legpress',fentes:'lunge',bulgare:'bulgarian',legext:'legext',legcurl:'legcurl',
  sdtrou:'rdl',hipthrust:'hipthrust',goodmorn:'goodmorn',molldeb:'calf_stand',mollass:'calf_seat',
  chestpress:'chest_mach',chestincl:'chest_incl_mach',elatmach:['lat_raise',{g:'handle'}],oisemach:'rear_mach',tractass:'assist_pull',dipsass:'dips_assist',tirvertneutre:['pulldown',{g:'handle'}],rowwide:'row_wide',extlombmach:'back_mach',curlmach:'curl_mach',tricepsmach:'tri_mach',legcurlass:'legcurl_seat',adduct:'adduct',abduct:'abduct',crunchmach:'crunch_mach',smithsquat:['squat',{sc:RAIL1}],smithbench:['press_flat',{sc:BF.concat(RAIL2),A:P([104,81],270,[80,50],[124,106]),B:P([104,81],270,[80,72],[124,106])}],
+ chestpoign:'chest_mach',chestdecl:'chest_mach',declconv:'chest_mach',hammer:'chest_mach',
+ dipspecmach:'tri_mach',dipstrimach:'tri_mach',devconv:'ohp_mach',
+ tirvertserre:['pulldown',{g:'handle'}],tirconv:'pulldown',tractsup:'assist_pull',tractsupser:'assist_pull',tractsuplarge:'assist_pull',tractproser:'assist_pull',tractprolarge:'assist_pull',
+ molltsmith:['calf_stand',{sc:RAIL1.concat([['r',58,104,52,6]]),g:null}],mollhack:'calf_stand',mollpresse:'calf_press',mollhoriz:'calf_press',
+ pressehaut:'legpress',pressserre:'legpress',pressehoriz:'legpress',
+ lcham:'legcurl',
+ hipext:'hip_ext',curlham:'curl_mach',
  crunch:'crunch',relevejambes:'leg_raise',planche:'plank',crunchpou:'crunch_cable',roue:'ab_wheel',extlomb:'back_ext'
 };
 
